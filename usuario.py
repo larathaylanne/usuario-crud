@@ -16,7 +16,7 @@ def criar_usuario(lista_de_usuarios):
             "senha": senhaUsuario
         }
 
-        lista.append(usuario)
+        lista_de_usuarios.append(usuario)
         escrever_dados(lista_de_usuarios, "usuario")
 
 def mostrar_meus_dados (usuario):
@@ -26,7 +26,7 @@ def mostrar_meus_dados (usuario):
 
     opcao = input("Deseja ver sua senha? S/N \n")
     if opcao.lower() == 's':
-        print(senhaUsuario)
+        print(usuario["senha"])
         
     else:
         print("Ok. Vamos proseguir então.")
@@ -57,45 +57,54 @@ def excluir_usuario (lista):
             print("Conta excluída com sucesso!")
 
 def alterar_usuario(lista):
-    opcao = int(input("O que deseja alterar? \n"))
-    print("1- Nome de usuário")
-    print("2- Senha")
-    print("3- Data de nascimento")
 
-    if opcao == 1:
-        novoNome = input("Qual será seu novo nome de usuário? \n")
-        if lista:
-            lista[0] = novoNome
+    nome= input("Digite seu nome: \n")
+    senha = input("Digite sua senha: \n")
 
-            escrever_dados(lista)
-    elif opcao == 2:
-        novaSenha = input("Qual será sua nova senha? \n")
-        if lista:
-            lista[0] = novaSenha
+    for usuario in lista:
+        if usuario["nome"] == nome and usuario["senha"] == senha:
+            print("O que deseja alterar? \n")
+            print("1 - NOME DE USUÁRIO: ")
+            print("2- Senha")
+            print("Data de nascimento:")
+            opcao = int(input("Digite a opção desejada: \n"))
 
-            escrever_dados(lista)
-    else:
-        novaDNascimento = input("Qual sua data de nascimento? \n")
-        if lista:
-            lista[0] = novaDNascimento
+            if opcao == 1:
+                novoNome = input("Qual será seu novo nome de usuário? \n")
+                usuario["nome"] = novoNome
+                escrever_dados(lista, "usuario")
+            elif opcao == 2:
+                novaSenha = input("Qual será sua nova senha? \n")
+                usuario["senha"] = novaSenha
 
-            escrever_dados(lista)
+                escrever_dados(lista, "usuario")
+            elif opcao == 3:
+                novaDNascimento = input("Qual sua data de nascimento? \n")
 
+                usuario["nascimento"] = novaDNascimento
+
+            escrever_dados(lista, "usuario")
+            return
+    print("Usuário ou senha incorretos. ")
+    
 def menu():
     lista_de_usuarios = ler_dados("usuario")
 
     print("--------MENU--------")
-    opcao = int(input("O que você deseja fazer? \n"))
     print("1- Criar uma conta \n")
     print("2- Entrar numa conta \n")
     print("3- Excluir uma conta \n")
     print("4- Alterar dados de uma conta \n")
+    opcao = int(input("O que você deseja fazer? \n"))
+    
     
     if opcao == 1:
-        criar_usuario
+        criar_usuario (lista_de_usuarios)
     elif opcao == 2:
-        login_usuario
+        login_usuario (lista_de_usuarios)
     elif opcao == 3:
-        excluir_usuario
+        excluir_usuario (lista_de_usuarios)
+    elif opcao == 4:
+        alterar_usuario (lista_de_usuarios)
     else:
-        alterar_usuario
+        print("opção inválida!")

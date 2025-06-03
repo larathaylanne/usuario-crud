@@ -1,6 +1,6 @@
 import json
 
-def ler_dados(usuario):
+def ler_dados(nome_arquivo):
     try:
         with open(f"{nome_arquivo}.json", "r", encoding="utf-8") as f:
             return json.load(f)
@@ -9,4 +9,4 @@ def ler_dados(usuario):
 
 def escrever_dados(lista, nome_arquivo):
     with open(f"{nome_arquivo}.json", "w", encoding="utf-8") as f:
-        json.dump(lista, f, indent=4, ensure_arcii=False)
+        json.dump(lista, f, indent=4, ensure_ascii=False)
