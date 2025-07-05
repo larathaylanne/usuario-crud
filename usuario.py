@@ -14,16 +14,19 @@ def criar_usuario():
              INSERT INTO usuarios (nome_usuario, data_nascimento, senha) VALUES (?, ?, ?)""", (nomeUsuario, dataNascimento, senhaUsuario))
             
             conn.commit()
-            print("USUÁRIO CADASTRADO COM SUCESSO!")
+            print("USUÁRIO CADASTRADO COM SUCESSO!\n\n\n\n\n")
+            
         except sqlite3.IntegrityError:
             print("Erro: Nome de usuário já cadastrado. ")
         finally:
             conn.close()
+        menu()
+        
 
 def mostrar_meus_dados (usuario):
     print("-------SEUS DADOS---------\n")
-    print(f"Nome: {usuario['nome']}")
-    print(f"Data de nascimento: {usuario['nascimento']}")
+    print(f"Nome: {usuario[1]}")
+    print(f"Data de nascimento: {usuario[2]}")
 
     opcao = input("Deseja ver sua senha? S/N \n")
     if opcao.lower() == 's':
@@ -54,9 +57,25 @@ def login_usuario():
     if usuario:
         print("Login bem-sucedido :D")
         print("Bem-vindo", usuario[1])
-        mostrar_meus_dados(usuario)
+        
+        while True:
+            print("O que você deseja fazer? \n")
+            print("1- Ver meus dados")
+            print("2- Alterar meus dados")
+            print("3- Sair")
+            opcao = input("Escolhar uma opção: \n")
+            
+            if opcao == '1':
+                mostrar_meus_dados(usuario)
+            elif opcao == '2':
+                alterar_usuario()
+            elif opcao == '3':
+                menu()
+            else:
+                print("Opção inválida")
     else:
-        print("Usuário ou senha incorreto. ")
+     print("Usuário ou senha incorreto. ")
+     menu()
 
 def excluir_usuario ():
     nome = input("Digite seu nome: \n")
@@ -109,16 +128,17 @@ def menu():
     print("2- Entrar numa conta \n")
     print("3- Excluir uma conta \n")
     print("4- Alterar dados de uma conta \n")
-    opcao = int(input("O que você deseja fazer? \n"))
+    opcao = input("O que você deseja fazer? \n")
     
     
-    if opcao == 1:
+    if opcao == '1':
         criar_usuario()
-    elif opcao == 2:
+    elif opcao == '2':
         login_usuario()
-    elif opcao == 3:
+    elif opcao == '3':
         excluir_usuario()
-    elif opcao == 4:
+    elif opcao == '4':
         alterar_usuario()
     else:
-        print("opção inválida!")
+        print("\nopção inválida!\n")
+    menu()
