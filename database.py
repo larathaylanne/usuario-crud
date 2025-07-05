@@ -1,12 +1,19 @@
-import json
+import sqlite3
 
-def ler_dados(nome_arquivo):
-    try:
-        with open(f"{nome_arquivo}.json", "r", encoding="utf-8") as f:
-            return json.load(f)
-    except FileNotFoundError:
-        return[]
+conn = sqlite3.connect("denuncias.db")
 
-def escrever_dados(lista, nome_arquivo):
-    with open(f"{nome_arquivo}.json", "w", encoding="utf-8") as f:
-        json.dump(lista, f, indent=4, ensure_ascii=False)
+cursor = conn.cursor()
+
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS usuarios (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome_usuario TEXT NOT NULL,
+    data_nascimento DATE NOT NULL,
+    senha TEXT NOT NULL
+)
+               """)
+
+conn.commit()
+conn.close()
+
+print("Banco de tabela criados")

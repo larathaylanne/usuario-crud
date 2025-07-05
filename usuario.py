@@ -1,23 +1,24 @@
-from database import ler_dados, escrever_dados
+import sqlite3
 
-def criar_usuario(lista_de_usuarios):
-    if not (lista_de_usuarios):
+def criar_usuario():
         print("Você ainda não tem uma conta. Vamos criar uma! \n")
         nomeUsuario = input("Crie seu nome de usuário: \n")
         dataNascimento = input("Digite sua data de nascimento: \n")
         senhaUsuario = input("Crie uma senha: \n")
 
-        id_usuario = len(lista_de_usuarios) + 1
-
-        usuario = {
-            "id": id_usuario,
-            "nome": nomeUsuario,
-            "nascimento": dataNascimento,
-            "senha": senhaUsuario
-        }
-
-        lista_de_usuarios.append(usuario)
-        escrever_dados(lista_de_usuarios, "usuario")
+        conn = sqlite3.connect("denuncias.db")
+        cursor = conn.cursor()
+        
+        try:
+            cursor.execute("""
+             INSERT INTO usuarios (nome_usuario, data_nascimento, senha) VALUES (?, ?, ?)""", (nomeUsuario, dataNascimento, senhaUsuario))
+            
+            conn.commit()
+            print("USUÁRIO CADASTRADO COM SUCESSO!")
+        except sqlite3.IntegrityError:
+            print("Erro: Nome de usuário já cadastrado. ")
+        finally:
+            conn.close()
 
 def mostrar_meus_dados (usuario):
     print("-------SEUS DADOS---------\n")
@@ -26,69 +27,82 @@ def mostrar_meus_dados (usuario):
 
     opcao = input("Deseja ver sua senha? S/N \n")
     if opcao.lower() == 's':
-        print(usuario["senha"])
+        conn = sqlite3.connect("denuncias.db")
+        cursor = conn.cursor()
+        cursor.execute("SELECT senha FROM usuarios WHERE id=?", (usuario[0],))
+        senha = cursor.fetchone()[0]
+        print(senha)
+        conn.close()
         
     else:
         print("Ok. Vamos proseguir então.")
 
-def login_usuario(lista):
+def login_usuario():
     nome = input("Digite seu nome: \n")
     senha = input("Digite sua senha: \n")
 
-    for usuario in lista:
-        if usuario["nome"] == nome and usuario["senha"] == senha:
-            print("Login bem-sucedido :D")
-            print("Bem-vindo", usuario["nome"]) 
-            return
-    print("Usuário ou senha incorretos. ")
+    conn = sqlite3.connect("denuncias.db")
+    cursor = conn.cursor()
     
-    lista_de_usuarios = ler_dados("usuario")
+    cursor.execute("""
+        SELECT id, nome_usuario, data_nascimento FROM usuarios WHERE nome_usuario=? AND senha=?""", (nome, senha))
+    
+    usuario = cursor.fetchone()
+    
+    conn.close()
+    
+    if usuario:
+        print("Login bem-sucedido :D")
+        print("Bem-vindo", usuario[1])
+        mostrar_meus_dados(usuario)
+    else:
+        print("Usuário ou senha incorreto. ")
 
-    nomeUsuario = input("Digite o nome do usuário: \n")
-
-def excluir_usuario (lista):
+def excluir_usuario ():
     nome = input("Digite seu nome: \n")
     senha = input("Digite sua senha: \n")
 
-    for usuario in lista:
-        if usuario["nome"] == nome and usuario["senha"] == senha:
-            lista.remove(usuario)
-            escrever_dados(lista, "usuario")
-            print("Conta excluída com sucesso!")
-
-def alterar_usuario(lista):
+    conn = sqlite3.connect("denuncias.db")
+    cursor = conn.cursor()
+    
+    cursor.execute("""
+        DELETE FROM usuarios WHERE nome_usuario=? AND senha=?
+                   """, (nome, senha))
+    conn.commit()
+    
+    if cursor.rowcount == 0:
+        print("Usuário ou senha incorretos.")
+    else:
+        print("Conta excluída com sucesso!")
+    conn.close()
+    
+def alterar_usuario():
 
     nome= input("Digite seu nome: \n")
     senha = input("Digite sua senha: \n")
 
-    for usuario in lista:
-        if usuario["nome"] == nome and usuario["senha"] == senha:
-            print("O que deseja alterar? \n")
-            print("1 - NOME DE USUÁRIO: ")
-            print("2- Senha")
-            print("Data de nascimento:")
-            opcao = int(input("Digite a opção desejada: \n"))
+    conn = sqlite3.connect("denuncias.db")
+    cursor = conn.cursor()
 
-            if opcao == 1:
-                novoNome = input("Qual será seu novo nome de usuário? \n")
-                usuario["nome"] = novoNome
-                escrever_dados(lista, "usuario")
-            elif opcao == 2:
-                novaSenha = input("Qual será sua nova senha? \n")
-                usuario["senha"] = novaSenha
-
-                escrever_dados(lista, "usuario")
-            elif opcao == 3:
-                novaDNascimento = input("Qual sua data de nascimento? \n")
-
-                usuario["nascimento"] = novaDNascimento
-
-            escrever_dados(lista, "usuario")
-            return
-    print("Usuário ou senha incorretos. ")
+    cursor.execute("""
+        SELECT id FROM usuarios WHERE nome_usuario=? AND senha=?""", (nome, senha))
+    usuario = cursor.fetchone()
+   
+    if usuario:
+        print("O que deseja alterar? \n")
+        print("1- Nome de usuário")
+        print("2- Senha")
+        print("3- Data de nascimento")
+        opcao = int(input("Digite a opção desejada: \n"))
+        
+        if opcao == 1:
+            novoNome = input("Qual será seu novo nome de usuário? \n")
+            cursor.execute("UPDATE usuarios SET senha=? WHERE id=?", (novoNome, usuario[0]))
+        elif opcao == 2:
+            novaSenha = input("Qual será seu novo nome de usuário \n")
+            cursor.execute("UPDATE usuarios SET senha=? WHERE id=?", (novaSenha, usuario[0]))
     
 def menu():
-    lista_de_usuarios = ler_dados("usuario")
 
     print("--------MENU--------")
     print("1- Criar uma conta \n")
@@ -99,12 +113,12 @@ def menu():
     
     
     if opcao == 1:
-        criar_usuario (lista_de_usuarios)
+        criar_usuario()
     elif opcao == 2:
-        login_usuario (lista_de_usuarios)
+        login_usuario()
     elif opcao == 3:
-        excluir_usuario (lista_de_usuarios)
+        excluir_usuario()
     elif opcao == 4:
-        alterar_usuario (lista_de_usuarios)
+        alterar_usuario()
     else:
         print("opção inválida!")
