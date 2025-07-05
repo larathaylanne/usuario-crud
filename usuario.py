@@ -112,14 +112,21 @@ def alterar_usuario():
         print("1- Nome de usuário")
         print("2- Senha")
         print("3- Data de nascimento")
-        opcao = int(input("Digite a opção desejada: \n"))
+        opcao = input("Digite a opção desejada: \n")
         
-        if opcao == 1:
+        if opcao == '1':
             novoNome = input("Qual será seu novo nome de usuário? \n")
             cursor.execute("UPDATE usuarios SET senha=? WHERE id=?", (novoNome, usuario[0]))
-        elif opcao == 2:
-            novaSenha = input("Qual será seu novo nome de usuário \n")
+            print("Nome de usuário alterado com sucesso")
+        elif opcao == '2':
+            novaSenha = input("Qual será sua nova senha? \n")
             cursor.execute("UPDATE usuarios SET senha=? WHERE id=?", (novaSenha, usuario[0]))
+            print("Senha alterada com sucesso!")
+        elif opcao == '3':
+            novaData = input("Qual será sua nova data de nascimento? \n")
+            cursor.execute("UPDATE usuarios SET senha=? WHERE id=?", (novaData, usuario[0]))
+            conn.commit()
+            print("Data de nascimento alterada com sucesso!")
     
 def menu():
 
