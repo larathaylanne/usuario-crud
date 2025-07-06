@@ -2,9 +2,9 @@ import sqlite3
 
 def criar_usuario():
         print("Você ainda não tem uma conta. Vamos criar uma! \n")
-        nomeUsuario = input("Crie seu nome de usuário: \n")
-        dataNascimento = input("Digite sua data de nascimento: \n")
-        senhaUsuario = input("Crie uma senha: \n")
+        nomeUsuario = input("Crie seu nome de usuário: \n").strip()
+        dataNascimento = input("Digite sua data de nascimento: \n").strip()
+        senhaUsuario = input("Crie uma senha: \n").strip()
 
         conn = sqlite3.connect("denuncias.db")
         cursor = conn.cursor()
@@ -41,8 +41,8 @@ def mostrar_meus_dados (usuario):
         print("Ok. Vamos proseguir então.")
 
 def login_usuario():
-    nome = input("Digite seu nome: \n")
-    senha = input("Digite sua senha: \n")
+    nome = input("Digite seu nome: \n").strip()
+    senha = input("Digite sua senha: \n").strip()
 
     conn = sqlite3.connect("denuncias.db")
     cursor = conn.cursor()
@@ -80,9 +80,9 @@ def login_usuario():
      print("Usuário ou senha incorreto. ")
      menu()
 
-def excluir_usuario ():
-    nome = input("Digite seu nome: \n")
-    senha = input("Digite sua senha: \n")
+def excluir_usuario():
+    nome = input("Digite seu nome: \n").strip()
+    senha = input("Digite sua senha: \n").strip()
 
     conn = sqlite3.connect("denuncias.db")
     cursor = conn.cursor()
@@ -100,49 +100,58 @@ def excluir_usuario ():
     
 def alterar_usuario():
 
-    nome= input("Digite seu nome: \n")
-    senha = input("Digite sua senha: \n")
+    nome= input("Digite seu nome: \n").strip()
+    senha = input("Digite sua senha: \n").strip()
 
     conn = sqlite3.connect("denuncias.db")
-    cursor = conn.cursor()
-
-    cursor.execute("""
-        SELECT id FROM usuarios WHERE nome_usuario=? AND senha=?""", (nome, senha))
-    usuario = cursor.fetchone()
-   
-    if usuario:
-        print("O que deseja alterar? \n")
-        print("1- Nome de usuário")
-        print("2- Senha")
-        print("3- Data de nascimento")
-        opcao = input("Digite a opção desejada: \n")
+    try:
         
-        if opcao == '1':
-            novoNome = input("Qual será seu novo nome de usuário? \n")
-            cursor.execute("UPDATE usuarios SET senha=? WHERE id=?", (novoNome, usuario[0]))
-            print("Nome de usuário alterado com sucesso")
-        elif opcao == '2':
-            novaSenha = input("Qual será sua nova senha? \n")
-            cursor.execute("UPDATE usuarios SET senha=? WHERE id=?", (novaSenha, usuario[0]))
-            print("Senha alterada com sucesso!")
-        elif opcao == '3':
-            novaData = input("Qual será sua nova data de nascimento? \n")
-            cursor.execute("UPDATE usuarios SET senha=? WHERE id=?", (novaData, usuario[0]))
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT id FROM usuarios WHERE nome_usuario=? AND senha=?""", (nome, senha))
+        usuario = cursor.fetchone()
+    
+        if usuario:
+            print("O que deseja alterar? \n")
+            print("1- Nome de usuário")
+            print("2- Senha")
+            print("3- Data de nascimento")
+            opcao = input("Digite a opção desejada: \n")
+            
+            if opcao == '1':
+                novoNome = input("Qual será seu novo nome de usuário? \n").strip()
+                cursor.execute("UPDATE usuarios SET senha=? WHERE id=?", (novoNome, usuario[0]))
+                print("Nome de usuário alterado com sucesso")
+            elif opcao == '2':
+                novaSenha = input("Qual será sua nova senha? \n").strip()
+                cursor.execute("UPDATE usuarios SET senha=? WHERE id=?", (novaSenha, usuario[0]))
+                print("Senha alterada com sucesso!")
+            elif opcao == '3':
+                novaData = input("Qual será sua nova data de nascimento? \n").strip()
+                cursor.execute("UPDATE usuarios SET senha=? WHERE id=?", (novaData, usuario[0]))
+                print("Data de nascimento alterada com sucesso!")
             conn.commit()
-            print("Data de nascimento alterada com sucesso!")
+        else:
+            print("Usuário ou senha incorretos.")
+    finally:
+        conn.close()
     
 def menu():
 
-    print("--------MENU--------")
-    print("1- Criar uma conta \n")
-    print("2- Entrar numa conta \n")
-    opcao = input("O que você deseja fazer? \n")
-    
-    
-    if opcao == '1':
-        criar_usuario()
-    elif opcao == '2':
-        login_usuario()
-    else:
-        print("\nopção inválida!\n")
-    menu()
+    while True:
+        print("--------MENU--------")
+        print("1- Criar uma conta \n")
+        print("2- Entrar numa conta \n")
+        opcao = input("O que você deseja fazer? \n")
+        
+        
+        if opcao == '1':
+            criar_usuario()
+        elif opcao == '2':
+            login_usuario()
+        elif opcao == '3':
+            print("Saindo... Até mais!")
+            break
+        else:
+            print("\nopção inválida!\n")
+        menu()
