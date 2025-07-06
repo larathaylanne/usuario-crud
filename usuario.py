@@ -62,7 +62,8 @@ def login_usuario():
             print("O que você deseja fazer? \n")
             print("1- Ver meus dados")
             print("2- Alterar meus dados")
-            print("3- Sair")
+            print("3- Excluir uma conta")
+            print("4- Sair")
             opcao = input("Escolhar uma opção: \n")
             
             if opcao == '1':
@@ -70,6 +71,8 @@ def login_usuario():
             elif opcao == '2':
                 alterar_usuario()
             elif opcao == '3':
+                excluir_usuario()
+            elif opcao == '4':
                 menu()
             else:
                 print("Opção inválida")
@@ -133,8 +136,6 @@ def menu():
     print("--------MENU--------")
     print("1- Criar uma conta \n")
     print("2- Entrar numa conta \n")
-    print("3- Excluir uma conta \n")
-    print("4- Alterar dados de uma conta \n")
     opcao = input("O que você deseja fazer? \n")
     
     
@@ -142,10 +143,6 @@ def menu():
         criar_usuario()
     elif opcao == '2':
         login_usuario()
-    elif opcao == '3':
-        excluir_usuario()
-    elif opcao == '4':
-        alterar_usuario()
     else:
         print("\nopção inválida!\n")
     menu()
